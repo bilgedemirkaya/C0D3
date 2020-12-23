@@ -9,7 +9,14 @@
  */
 
 const solution = (inp, letter, i = 0) => {
-  return true
+  let found = false
+  if (inp[i] === letter) {
+    found = true 
+  }
+  else if (inp[i] !== letter && i < inp.length) {
+    found = solution(inp,letter,i+1)
+  }
+  return found
 }
 
 module.exports = {

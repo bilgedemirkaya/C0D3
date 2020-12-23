@@ -9,6 +9,11 @@
  */
 
 const solution = (fun, i = 0) => {
+  let f = fun(i)
+  if (f !== false) {
+    solution(fun,i + 1)
+  }
+  return 0
 }
 
 module.exports = {

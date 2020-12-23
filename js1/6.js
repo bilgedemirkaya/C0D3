@@ -8,6 +8,15 @@
  */
 
 const solution = (num, i = 2) => {
+  if (num === 2) {
+    return true
+  }
+  if (num !== i && num % i === 0 ||  num <= 1) {
+    return false
+  }
+  if (num != i) {
+    return solution(num, i+1)
+  }
   return true
 }
 
