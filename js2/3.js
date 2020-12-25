@@ -10,8 +10,21 @@
  * @returns {array}
  */
 
-const solution = (row, col) => {
-  return []
+function makeSub (col,arr=[],i=0) {
+  if (col <= i ) {
+    return arr
+  }
+  arr.push(0) 
+  return makeSub(col,arr,i+1)
+}
+
+const solution = (row, col,arr = [], e=0) => {
+  if (row <= e) {
+    return arr
+  }
+  const sub = makeSub(col)
+  arr.push(sub)
+  return solution(row, col,arr, e+1)
 }
 
 module.exports = {
