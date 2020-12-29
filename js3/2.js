@@ -12,9 +12,27 @@
  * @return {array} arr
  */
 
-const solution = (num1, num2) => {
-  return []
+function makeSub(num2, counter, arr=[], i=0) {
+  let newobj = {}
+  if (i >= num2) {
+    return arr
+  }
+  newobj['x'] = i
+  newobj['y'] = counter
+  arr.push(newobj)
+  return makeSub(num2,counter,arr,i+1)
 }
+
+const solution = (num1, num2, i=0, newArr=[],counter=0) => {
+  if (i >= num1) {
+    return newArr
+  }
+  let b = (makeSub(num2,counter))
+
+  newArr.push(b)
+  return solution(num1, num2, i+1, newArr,counter+1)
+}
+
 
 module.exports = {
   solution
