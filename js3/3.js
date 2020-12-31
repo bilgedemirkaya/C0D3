@@ -6,7 +6,13 @@
 
 const solution = (arr) => {
   return (obj) => {
-  }
+    return arr.reduce((acc, key) => {
+      if (obj.hasOwnProperty(key)) {
+        acc[key] = obj[key]
+      }
+      return acc
+    },{})
+}
 }
 
 module.exports = {
