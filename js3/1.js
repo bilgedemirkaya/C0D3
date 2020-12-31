@@ -4,15 +4,13 @@
  * @returns {array} arr
  */
 // with recursion
-const solution = (arr, obj, i=0, newArr=[]) => {
-  let keys = Object.keys(obj)
-  if (i > keys.length) {
-    return newArr
-  }
-  if (keys.includes(arr[i])) {
-    newArr.push(obj[arr[i]])
-  }
-  return solution(arr,obj, i+1, newArr)
+const solution = (arr, obj) => {
+  return arr.reduce( (acc, key) => {
+       if (obj.hasOwnProperty(key)) {
+         acc.push(obj[key])
+      }
+      return acc
+      }, []);
 }
 
 module.exports = {
