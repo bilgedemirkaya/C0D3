@@ -22,7 +22,6 @@ function makeSub(num2, counter, arr=[], i=0) {
   arr.push(newobj)
   return makeSub(num2,counter,arr,i+1)
 }
-
 const solution = (num1, num2, i=0, newArr=[],counter=0) => {
   if (i >= num1) {
     return newArr
