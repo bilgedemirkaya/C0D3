@@ -1,0 +1,24 @@
+<button class="btn"> Add counter </button>
+<div class="container"> 
+</div>
+
+<script>
+    const btn = document.querySelector('.btn')
+    const container = document.querySelector('.container')
+
+    function addCounter () {
+        let count = 0
+        const div  = document.createElement('div')
+        const clicks = document.createElement('h1')
+        clicks.innerText = `${count} clicks `
+        div.append(clicks)
+        container.appendChild(div)
+        div.addEventListener('click', () => {
+            count++
+            clicks.innerText = `${count} clicks `
+        })
+    }
+
+    btn.addEventListener('click', addCounter)
+
+</script>
