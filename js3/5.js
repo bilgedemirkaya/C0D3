@@ -7,7 +7,7 @@
 
 const solution = (obj1, obj2) => {
   const keys = Object.keys(obj1)
-
+  
   return keys.reduce((acc,key) => {
     obj2.hasOwnProperty(key) ? acc[key] = obj2[key](obj1[key]) : acc[key] = obj1[key] 
     return acc

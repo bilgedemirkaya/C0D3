@@ -4,23 +4,15 @@
  * @returns {array}
 */
 
-const val = arr[i]
-const keys = Object.keys(hashmap)
-
-const solution = (arr, i=0, hashmap= {}) => {
-  const val = arr[i]
-  const keys = Object.keys(hashmap)
-  
-  if ( i >= arr.length ) {
-    return keys.reduce((acc, key) => { 
-      if (hashmap[key]) {
-          acc.push(parseInt(key))
-      }
-      return acc
-      },[])
-  }
-  hashmap.hasOwnProperty(val) ? hashmap[val] = true  : hashmap[val] = false
-  return solution(arr, i+1, hashmap)
+const solution = (arr) => {
+  let res = []
+  arr.reduce((acc, val) => {
+    acc[val] = (acc[val] || 0) + 1
+    if (acc[val] == 2) 
+      res.push(val)
+    return acc
+  }, {})
+  return res
 }
 
 module.exports = {
