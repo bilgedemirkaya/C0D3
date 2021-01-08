@@ -1,0 +1,42 @@
+
+    <button class="back-btn">Previous</button>
+    <button class="next-btn">Next</button>
+    <div class="pokemons"></div>
+
+  <script>
+    let prevPage = null
+    let nextPage = null
+    const backBtn = document.querySelector('.back-btn')
+    const nextBtn = document.querySelector('.next-btn')
+    const pokemons = document.querySelector('.pokemons')
+
+    const fetchData = (url) => {
+      fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        prevPage = data.previous
+        nextPage = data.next
+        Promise.all(data.results.map((pokemon) => fetch(pokemon.url).then(res => res.json())))
+        .then((data) => {
+          pokemons.innerHTML = data.reduce((acc, pokemon) => {
+            return `${acc}<div><img src="${pokemon.sprites.front_default}"><h1>${pokemon.name}</h1></div>`
+      }, "")
+      })
+      })
+    }
+  
+    backBtn.addEventListener('click', () => {
+      if (!prevPage) return
+      fetchData(prevPage)
+    })
+  
+    nextBtn.addEventListener('click', () => {
+        if (!nextPage) return
+        fetchData(nextPage)
+    })
+
+    fetchData('https://pokeapi.co/api/v2/pokemon/')
+
+
+  </script>
+  
