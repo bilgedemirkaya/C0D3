@@ -6,15 +6,16 @@
  * @returns {boolean}
  */
 
-const solution = (arr, num, i=0) => {
+const solution = (arr, num,i=0,hashmap = {}) => {
+  const val = arr[i]
   if ( i >= arr.length ) {
     return false
   }
-  arr.splice(i,1)
-  if (arr.includes(num - arr[i])) {
-      return true
+  if (hashmap[num - val]) { 
+   return hashmap[num - val]
   }
-  return solution(arr, num, i+1)
+  hashmap[val] = true   
+  return solution(arr, num, i+1, hashmap)
 }
 
 module.exports = {
