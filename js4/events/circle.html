@@ -1,0 +1,56 @@
+<div class="screen"></div>
+<style>
+.screen{
+  position: fixed;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  background-color: rgba(200,255,255, 1);
+}
+.circle {
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  border: 2px rgba(0,0,0,1) solid;
+  background: #00ffff;
+  position: absolute;
+  text-align: center;
+  font-size: 30px;
+  box-sizing:border-box;
+  padding-top:25px;
+}
+</style>
+<script>
+const main = document.querySelector('.screen')
+
+function Circle (x, y) {
+  y = y-50
+  x = x-50
+  let counter = 10
+  const circle = document.createElement('div')
+  circle.classList.add('circle')
+  circle.style.top = `${y}px`
+  circle.style.left = `${x}px`
+  circle.innerText = counter
+  main.append(circle)
+
+  circle.addEventListener('click', (e) => {
+      counter -= 1
+      if (counter <= 0 ) {
+        circle.remove()
+        e.stopPropagation()
+        return
+      } 
+      circle.innerText = counter
+      e.stopPropagation()
+      console.log(counter)
+  })
+
+}
+
+main.addEventListener('click', (e) => {
+  new Circle(e.clientX, e.clientY)
+})
+
+</script> 
