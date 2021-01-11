@@ -1,0 +1,48 @@
+<!-- makes a grid with given input, when click on a box display the row and column -->
+
+<input type='number'/> 
+<div class='container'></div>
+
+<script>
+const number = document.querySelector('input')
+const container = document.querySelector('.container')
+
+function Box (id) {
+  const element = document.createElement('div')
+  element.classList.add('box')
+  container.append(element)
+  element.addEventListener('click', (e) => {
+      const grid = (number.value * number.value) 
+      const order = grid - id
+      const col = order % number.value
+      let row = Math.floor(order / number.value)
+      element.innerHTML = `r: ${row} c : ${col}`
+  })
+}
+
+const makeBoxes = (value) => {
+  if(!value) return 
+  new Box(value)
+  return makeBoxes(value - 1)
+}
+
+number.addEventListener('input', (e) => {
+    const value = number.value
+    container.innerHTML = ''
+    container.style.width = `${value * 100}px`
+    makeBoxes(value*value)
+})
+
+</script>
+
+<style>
+    .box {
+    width: 100px;
+    height: 100px;
+    border: 1px black solid;
+    box-sizing: border-box;
+    display: inline-block;
+    padding: 10px;
+    vertical-align: top;
+}
+</style>
