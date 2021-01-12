@@ -1,0 +1,198 @@
+<link rel="stylesheet" href="https://songz.c0d3.com/js4/exercises/war.css">
+<h1> Class Name </h1>
+<h2>Warrior</h2>
+<div class="rowContainer warriorContainer"></div>
+<h2>Peasant</h2>
+<div class="rowContainer peasantContainer"></div>
+    </div>
+  </div>
+</div>
+<script> 
+ const wContainer = document.querySelector('.warriorContainer')
+  const pContainer = document.querySelector('.peasantContainer')
+
+  const directions = ["up", "down", "left", "right"]
+  directions.forEach((dir, outerIndex) => {
+    [false].forEach((isAttacking, innerIndex) => {
+      const left = 128 * (2*outerIndex + innerIndex)
+      new Person(left, 0, dir, isAttacking)
+    })
+  })
+
+  directions.forEach((dir, outerIndex) => {
+    [true].forEach((isAttacking, innerIndex) => {
+      const left = 128 * (2*outerIndex + innerIndex)
+      new Warrior(left, 0, dir, isAttacking)
+    })
+  })
+
+
+  let warrior = null
+  function Warrior(x, y, direction="down", attacking=false) {
+    const container = document.createElement('div')
+    container.className = 'characterContainer'
+    wContainer.append(container)
+
+    const render = () => {
+      let attackClass = ''
+      let dot = ''
+      if (attacking) {
+        attackClass = 'attack'
+        dot = '.'
+      }
+      container.style.top = `${y}px`
+      container.style.left = `${x}px`
+      container.innerHTML = `
+        <div class="character warrior ${direction} ${attackClass}"></div>
+        <p class="description">.character.warrior.${direction}${dot}${attackClass}</p>
+      `
+      setTimeout(() => {
+        attacking = !attacking
+        render()
+      }, 500)
+    }
+    render()
+  }
+
+  function Person(x, y, direction="down", attacking=false) {
+    const container = document.createElement('div')
+    container.className = 'characterContainer'
+    pContainer.append(container)
+
+    container.style.top = `${y}px`
+    container.style.left = `${x}px`
+    container.innerHTML = `
+      <div class="character " />
+    `
+    const render = () => {
+      container.style.top = `${y}px`
+      container.style.left = `${x}px`
+      container.innerHTML = `
+        <div class="character ${direction}" />
+        <p class="description">.character.${direction}</p>
+      `
+    }
+    render()
+  }
+</script>
+<style>
+@keyframes play-down {
+    100% { background-position: -576px; }
+   }
+   
+   @keyframes play-up {
+    100% { background-position: -576px 832px; }
+   }
+   
+   @keyframes play-left {
+    100% { background-position: -576px 768px; }
+   }
+   
+   @keyframes play-right {
+    100% { background-position: -576px 640px; }
+   }
+   
+   @keyframes attack-down {
+    100% { background-position: -832px 192px; }
+   }
+   
+   @keyframes attack-up {
+    100% { background-position: -832px 320px; }
+   }
+   
+   @keyframes attack-left {
+    100% { background-position: -832px 256px; }
+   }
+   
+   @keyframes attack-right {
+    100% { background-position: -832px 128px; }
+   }
+   
+   .character.warrior {
+     background: url('warrior.png') left center;
+   }
+   .warrior.character.up {
+     background: url('warrior.png') 0px 832px;
+   }
+   
+   .warrior.character.left {
+     background: url('warrior.png') 0px 768px;
+   }
+   
+   .warrior.character.right {
+     background: url('warrior.png') 0px 640px;
+   }
+   
+   .warrior.attack.down {
+     background: url('warrior.png') 0px 192px;
+     animation: attack-down .5s steps(13);
+   }
+   .warrior.attack.up {
+     background: url('warrior.png') 0px 320px;
+     animation: attack-up .5s steps(13);
+   }
+   .warrior.attack.left {
+     background: url('warrior.png') 0px 256px;
+     animation: attack-left .5s steps(13);
+   }
+   .warrior.attack.right {
+     background: url('warrior.png') 0px 128px;
+     animation: attack-right .5s steps(13);
+   }
+   
+   
+   .character {
+     width: 64px;
+     height: 64px;
+     background: url('base.png') left center;
+     animation: play-down .5s steps(9) infinite;
+     position: absolute;
+   }
+    
+   .character.up {
+     background: url('base.png') 0px 832px;
+     animation: play-up .5s steps(9) infinite;
+   }
+   
+   .character.left {
+     background: url('base.png') 0px 768px;
+     animation: play-left .5s steps(9) infinite;
+   }
+   
+   .character.right {
+     background: url('base.png') 0px 640px;
+     animation: play-right .5s steps(9) infinite;
+   }
+   
+   .characterContainer {
+     position: absolute;
+     transition-property: left, top;
+     transition-duration: 0.5s;
+   }
+   .row {
+     width: 100%;
+     display: flex;
+     position: absolute;
+     justify-content: center;
+   }
+   .square {
+     padding: 10px;
+   }
+   p {
+     color:maroon;
+   }
+   .rowContainer {
+  position: relative;
+  height: 100px;
+}
+.description {
+  position: absolute;
+  bottom: -30px;
+  color: rgba(100, 20, 20, 1);
+  margin: 0px;
+}
+      .characterContainer {
+        width: 64px;
+        height: 64px;
+      }
+</style>

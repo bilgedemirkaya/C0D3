@@ -1,0 +1,79 @@
+<div class="container">
+    <h1 class="header"> TODO LIST EXAMPLE </h1>
+    <input class="todo" type="text">
+<div class="todolist"></div>
+</div>
+<script>
+    const input = document.querySelector('.todo')
+    const todolist = document.querySelector('.todolist')
+    let todos = JSON.parse(localStorage.getItem('todos')) || []
+
+    function addTodo (e) {
+        if (e.key === 'Enter') {
+            todolist.innerHTML = ''
+            let oneTodo = {
+                todo: input.value,
+                createdAt: new Date(Date.now())
+            }
+            todos.push(oneTodo)
+            localStorage.setItem('todos', JSON.stringify(todos))
+            input.value = ''
+            showList()
+        }   
+    }
+    function rmvBtn (i) {
+        todos.splice(i,1)
+        localStorage.setItem('todos', JSON.stringify(todos))
+        showList()
+    }
+
+    function showList () {
+        todolist.innerHTML = todos.map((todo, i) => {
+            return ` <li class='list'>
+                 <p> ${todo.todo} </p> <p style="opacity:0.8; font-size="small"> ${todo.createdAt.toLocaleString()} </p>
+                 <button class='rm-btn' onClick= rmvBtn(${i})> Remove </button>
+                </li> `
+        }).join(' ')
+    }
+
+    showList()
+    input.addEventListener('keyup', addTodo)
+</script>
+
+<style>
+    .container {
+        border: 1px solid blue;
+        padding: 15px;
+        justify-content: center;
+        vertical-align: center;
+        margin: auto;
+        max-width:  500px;
+    }
+    .header {
+        font-weight: bold;
+        font-size: 42px;
+    }
+    .todo {
+        width:100%;
+        padding: 10px;
+    }
+    .todolist {
+        margin: 15px;
+    }
+
+    .list {
+        display: block;
+        font-size: large;
+        background-color: rgb(201, 198, 198);
+        padding: 10px;
+        margin: 15px;
+    }
+    p {
+        display: inline;
+    }
+    .rm-btn {
+        display: inline;
+        float: right;
+    }
+
+</style>
