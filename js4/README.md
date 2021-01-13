@@ -1,1 +1,1 @@
-demo for smartwatch project (here)[https://bilgedemirkaya.github.io/C0D3/js4/smartwatch.html]
+demo for smartwatch project => https://bilgedemirkaya.github.io/C0D3/js4/smartwatch.html
