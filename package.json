@@ -8,6 +8,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "jest": "^26.0.1",
+    "node-fetch": "^2.6.1",
     "webpack": "^4.43.0"
   },
   "devDependencies": {
