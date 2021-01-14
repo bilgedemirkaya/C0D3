@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+    integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container">
+        <div class="stars"></div>
+        <h4> <span class="changeme">You are giving </span> <span class="count"></span> stars!</h4>
+    </div>
+
+    <style>
+        i {
+            font-size: 3.2em;
+        }
+        .fas {
+            color:yellow;
+            -webkit-text-stroke-width: 3px;
+            -webkit-text-stroke-color: black;
+        }
+
+    </style>
+
+    <script>
+        const starElement = document.querySelector('.stars')
+        const countElement = document.querySelector('.count')
+        const sentence = document.querySelector('.changeme') // you are giving
+        let clicked = false
+
+        function createStar (count) {
+            if (count == 0 ) return
+            const star = document.createElement('i')
+            star.classList = 'far fa-star'
+            const order = 6 - count
+            star.id = order
+            star.addEventListener('mouseover', () => {
+                if (clicked) return
+                sentence.innerHTML = 'You are giving'
+                const allStars = document.querySelectorAll('.fa-star')
+                allStars.forEach( (element) => {
+                    // color the moused over star and stars that have smaller id
+                    if (element.id <= order ) { 
+                        element.classList = "fas fa-star"
+                        countElement.innerHTML = order
+                    }
+                    else 
+                        element.classList = "far fa-star"  
+                })    
+            })
+            
+            star.addEventListener('click', () => {
+                sentence.innerHTML = 'You have given'
+                clicked = true
+            })
+       
+            starElement.append(star)
+            createStar(count-1)
+        }
+
+        starElement.addEventListener('mouseleave', () => clicked = false)
+        createStar(5)
+
+    </script>
+</body>
+</html>
