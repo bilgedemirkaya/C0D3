@@ -11,7 +11,7 @@
 <body>
     <div class="container">
         <div class="stars"></div>
-        <h4> <span class="changeme">You are giving </span> <span class="count"></span> stars!</h4>
+        <h4> <span class="changeme">Give </span> <span class="count"></span> stars!</h4>
     </div>
 
     <style>
@@ -32,38 +32,43 @@
         const sentence = document.querySelector('.changeme') // you are giving
         let clicked = false
 
-        function createStar (count) {
-            if (count == 0 ) return
-            const star = document.createElement('i')
-            star.classList = 'far fa-star'
-            const order = 6 - count
-            star.id = order
-            star.addEventListener('mouseover', () => {
-                if (clicked) return
-                sentence.innerHTML = 'You are giving'
-                const allStars = document.querySelectorAll('.fa-star')
-                allStars.forEach( (element) => {
-                    // color the moused over star and stars that have smaller id
-                    if (element.id <= order ) { 
-                        element.classList = "fas fa-star"
-                        countElement.innerHTML = order
-                    }
-                    else 
-                        element.classList = "far fa-star"  
-                })    
-            })
-            
-            star.addEventListener('click', () => {
+
+        function Star(order) {
+                this.order = order
+
+                // create star element inside a Star object
+                this.star = document.createElement('i')
+                star = this.star
+                star.classList = 'far fa-star'
+                starElement.append(star)
+
+                star.addEventListener('mouseover', () => {
+                    if (clicked) return
+                    sentence.innerHTML = 'You are giving'
+                    stars.forEach((element) => {
+                        element.order <= this.order ? 
+                        element.select() :
+                        element.deselect()
+                     
+                    })
+                })
+                this.select = () => { 
+                    this.star.classList = "fas fa-star"
+                    countElement.innerHTML = order  
+                }
+
+                this.deselect = () => {
+                    this.star.classList = "far fa-star" 
+                }
+
+                star.addEventListener('click', () => {
                 sentence.innerHTML = 'You have given'
                 clicked = true
             })
-       
-            starElement.append(star)
-            createStar(count-1)
         }
 
         starElement.addEventListener('mouseleave', () => clicked = false)
-        createStar(5)
+        const stars = [1, 2, 3, 4, 5].map((id) => new Star(id))
 
     </script>
 </body>
