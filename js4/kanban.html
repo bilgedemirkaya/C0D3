@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban Board</title>
+    <style>
+        .container {
+            display: flex;
+        }
+        .title{
+            margin: 30px;
+            flex: 1;
+            color:white;
+            text-align: center;
+            font-size: x-small;
+            padding:1px;
+        }
+        .form {
+            flex: 1;
+            margin-left: 30px;
+        }
+
+        textarea {
+            width: 80%;
+            background-color: brown;
+        }
+        button {
+            background-color: rgb(207, 160, 160);
+        }
+        .todo {
+            background-color: #35235D;
+        }
+        .doing { 
+            background-color: #CB2402;
+        }
+        .done { 
+            background-color: #4C49A2;
+        }
+        .approved {
+            background-color: #A31A48;
+        }
+        .todoDiv, .doingDiv, .doneDiv, .approvedDiv {
+            flex: 1
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="todoDiv">
+            <div class="title todo">
+                <h1>To-Do</h1>
+            </div>
+            <div class="form">
+                <textarea> </textarea>
+                <button> Submit </button>
+            </div>
+        </div>
+        <div class="doingDiv">
+            <div class="title doing">
+                <h1> Doing </h1>
+            </div>
+            <div class="form">
+                <textarea> </textarea>
+                <button> Submit </button>
+            </div>
+        </div>
+        <div class="doneDiv">
+            <div class="title done">
+                <h1> Done</h1>
+            </div>
+            <div class="form">
+                <textarea> </textarea>
+                <button> Submit </button>
+            </div>
+        </div>
+        <div class="approvedDiv">
+            <div class="title approved">
+                <h1> Approved </h1>
+            </div>
+            <div class="form">
+                <textarea> </textarea>
+                <button> Submit </button>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>
