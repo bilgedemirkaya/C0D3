@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title></title>
+    <style>
+      .small {
+        margin: auto;
+        width: 400px;
+        height: 170px;
+        cursor: none;
+        z-index: 1;
+      }
+
+      .scope {
+        display: none;
+        position: fixed;
+        background-image: url(images/big.jpg);
+        height: 200px;
+        border-radius: 50%;
+        overflow: hidden;
+        pointer-events: none;
+        background-repeat: no-repeat;
+        z-index: 2;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="small">
+        <img src="images/small.jpg" class="img"/>
+      </div>
+      <div class="scope">
+        <img src="images/scope.png" />
+      </div>
+    </div>
+
+    <script>
+      const small = document.querySelector(".small")
+      const scope = document.querySelector(".scope")
+      const img = document.querySelector('.img')
+  
+      const x = 1263 / 421
+      const y = 503 / 168
+  
+      small.addEventListener('mouseleave', () => {
+        scope.style.display = 'none'
+      })
+
+      small.addEventListener('mousemove', (e) => {
+        scope.style.display = 'block'
+        scope.style.top = `${e.clientY -100}px`
+        scope.style.left = `${e.clientX -100}px`
+        scope.style.backgroundPositionX = `${-1 * x * e.offsetX + 100}px`
+        scope.style.backgroundPositionY = `${-1 * y * e.offsetY + 100}px`
+      })
+    </script>
+  </body>
+</html>
+
