@@ -3,100 +3,81 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Smart Watch</title>
-
+  <title></title>
   <style>
-    html, body {
-        margin: 0; 
-        height: 100%; 
-        overflow: hidden;
+    #container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 655px;
+      height: 800px;
+      background: url('./images/watch.jpg');
     }
-    
-    .container {
-        position: absolute;
-        width: 655px;
-        height: 800px;
+
+    #innerContainer {
+      position: relative;
+      margin: 208px auto auto 132px;
+      width: 377px;
+      height: 377px;
+      border-radius: 50%;
+      overflow: hidden;
     }
-    
-    .clock { 
-        position: relative;
-        margin: 100px 300px auto 200px;
-        top: 207px;
-        left: -37px;
-        width: 457px;
-        height: 457px;
-        border-radius: 50%;
-        overflow: hidden;
-        margin-top: 50px;
+
+    #content {
+      position: absolute;
+      top: 50%;
+      margin: auto;
+      background-color: #fff;
+      text-align: center;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      transition: top 0.5s linear;
     }
-    
-    .content.full {
-        top:0px;
+
+    #content.full {
+      top: 0;
     }
-    
-    .content {
-        width: 100%;
-        height: 100%;
-        text-align: center;
-        position: absolute;
-        top: 48%;
-        background-color: #fff;
-        cursor: pointer;
-        transition: top 0.5s linear;
-    }
-    
-    .img {
-       position: absolute;
-       width: 800px;
-    }
-    iframe {
-          margin-top: -120px;
-          margin-left: -120px;
-        }
-    
+
     h1 {
-          font-size: 5em;
-          margin-top: 30px;
-        }
-    </style>
+      font-size: 5em;
+      margin-top: 30px;
+    }
+
+    iframe {
+      margin-top: -120px;
+      margin-left: -120px;
+    }
+  </style>
 </head>
 
 <body>
-<img class="img" src="./images/watch.jpg"> 
-<div class="container">
-    <div class="clock">
+  <div id="container">
+    <div id="innerContainer">
         <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2113.0993729454913!2d31.38820512524874!3d36.7653457620954!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14c3593458bc0a2b%3A0x7499a7d92c431062!2zQXBvbGxvbiBUYXDEsW5hxJ_EsQ!5e0!3m2!1str!2str!4v1610468753335!5m2!1str!2str" width="600" height="450" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
-        <div class="content">
-            <h1><span id="hours"></span>:<span id="minutes"></span></h1> <hr>
-            <br><br>
-        <h2> <span id="day"></span> </h2>
-        <h2> <span id="date"></span>  </h2>
+
+      <div id="content">
+        <h1><span id="hour">00</span>:<span id="minute">00</span></h1>
+        <hr>
+        <h2 id="weekday"> Wednesday </h2>
+        <h2> <span id="month"></span> <span id="date"></span>, <span id="year"></span> </h2>
+      </div>
     </div>
-</div>
-
-<script> 
-    // select elements
-    const content = document.querySelector('.content')
-    const hoursElement = document.querySelector('#hours')
-    const minsElement = document.querySelector('#minutes')
-    const dayElement = document.querySelector('#day')
-    const dateElement = document.querySelector('#date')
-    const date = new Date()
-    const minutes = date.getMinutes() + ''
-
-    // set date and time
-    hoursElement.innerHTML = date.getHours() % 12
-    minsElement.innerHTML = minutes.length < 2 ? `0${minutes}` : minutes
-    dayElement.innerHTML = date.toLocaleDateString('en-US', { weekday: 'long' })
-    dateElement.innerHTML = date.toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric' })
-
-    // toggle to change classlist
-    function toggle () {
-        content.classList.toggle('full')
+  </div>
+  <script>
+    content.onclick = () => {
+      content.className = content.className.includes('full') ? '' : 'full';
     }
-
-    content.addEventListener('click', toggle)
-</script>
-
+    const d = new Date();
+    hour.innerText = d.getHours() % 12;
+    const minutes = d.getMinutes() + '';
+    minute.innerText = minutes.length < 2 ? `0${minutes}` : minutes;
+    weekday.innerText = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][d.getDay()];
+    month.innerText = ["January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"][d.getMonth()];
+    date.innerText = d.getDate();
+    year.innerText = d.getFullYear();
+  </script>
 </body>
+
 </html>
