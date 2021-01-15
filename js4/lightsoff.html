@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lights off</title>
+    <style>
+          .block {
+            width: 50px;
+            height: 50px;
+            border: 1px black solid;
+            box-sizing: border-box;
+            display: inline-block;
+            vertical-align: top;
+            margin-top: 7px;
+            background-color: rgb(189, 189, 189);
+            }
+            .flash {
+            background-color: rgb(83, 241, 83);
+          }
+    </style>
+</head>
+<body>
+    <div id='container'></div>
+    
+<script>
+
+let blocks = []
+let size = 2
+
+function gameOver() {
+  const isOver = (col) => col.every((row) => row.light == false)
+  
+  return blocks.every(isOver)
+  }
+
+function Block (row, column) {
+  this.row = row
+  this.column = column
+  this.light = false
+
+  // add element to dom
+  const element = document.createElement('div')
+  element.className = 'block'
+  container.appendChild(element)
+
+  this.toggleBlocks = () => {
+    this.toggleLight() // toggle that block first
+    // toggle neighbors
+    blocks[row + 1] && blocks[row + 1][column].toggleLight()
+    blocks[row - 1] && blocks[row - 1][column].toggleLight()
+    blocks[row][column + 1] && blocks[row][column + 1].toggleLight()
+    blocks[row][column - 1] && blocks[row][column - 1].toggleLight()
+  }
+
+  this.toggleLight = () => {
+      this.light = !this.light
+      element.classList.toggle('flash')
+    }
+
+  element.addEventListener("click", () => {
+          if (this.light) {
+            this.toggleBlocks() // toggle neighbors
+            if (gameOver()) {
+              container.innerHTML = ' '
+              size = +prompt('You won! Play again with different size? 0 to stop playing')
+              if (size == 0) return
+              startGame()
+            }
+          }
+      })
+}
+
+const makeGrid = (arr, row = 0, col = 0, tmp = []) => {
+  if(col === size) // grid finished
+            return
+  if (row === size) { // row finished 
+    arr.push(tmp)
+    return makeGrid(arr, 0, col + 1, [])
+  }
+  tmp.push(new Block(col, row))
+  return makeGrid(arr, row + 1, col, tmp)
+}
+
+function getRandomInt() {
+  return Math.floor(Math.random() * size);
+}
+
+
+const startGame = () => {
+  container.style.width = `${size * 50}px`
+  blocks = []
+  makeGrid(blocks)
+
+  const randomx = getRandomInt()
+  const randomy = getRandomInt()
+  blocks[randomx][randomy].toggleLight()
+}
+startGame()
+
+</script>
+        
+    
+</body>
+</html>
