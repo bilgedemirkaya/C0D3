@@ -3,3 +3,5 @@ demo for smartwatch project => https://bilgedemirkaya.github.io/C0D3/js4/smartwa
 demo for stars => https://bilgedemirkaya.github.io/C0D3/js4/stars.html
 
 demo for google scope => https://bilgedemirkaya.github.io/C0D3/js4/googlescope.html
+
+demo for ligths off game => https://bilgedemirkaya.github.io/C0D3/js4/lightsoff.html
