@@ -5,28 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kanban Board</title>
     <style>
-        .container {
-            display: flex;
+        * {
+            box-sizing: border-box;
+            }
+        body {
+            margin: 40px 40px 0 0px;
+            display: flex; 
         }
         .title{
-            margin: 30px;
-            flex: 1;
             color:white;
             text-align: center;
-            font-size: x-small;
-            padding:1px;
+            font-size: 22px;
+            padding: 10px;
+            margin: auto;
         }
         .form {
-            flex: 1;
-            margin-left: 30px;
+            display: flex;
+            margin-top: -5px;
         }
-
+        .submit {
+            flex:1;
+            font-size: large;
+        }
         textarea {
-            width: 80%;
-            background-color: brown;
-        }
-        button {
-            background-color: rgb(207, 160, 160);
+            flex: 6;
+            font-size: large;
         }
         .todo {
             background-color: #35235D;
@@ -41,49 +44,187 @@
             background-color: #A31A48;
         }
         .todoDiv, .doingDiv, .doneDiv, .approvedDiv {
-            flex: 1
+            margin-left: 40px;
+            flex:1;
+            width: 25%;
+        }
+        .undo {
+            position: fixed;
+            bottom:0px;
+            right: 0px;
+            padding: 25px;
+        }
+        .task {
+            background-color: rgb(238, 238, 238);
+            padding: 13px;
+            margin-bottom:5px;
+            font-size: 20px;
+        }
+        .Rightarrows, .Leftarrows {
+            border: none;
+            outline: none;
+            cursor: pointer;
+            font-size: large;
+            justify-content: center;
+            display: inline;
+        }
+        .Rightarrows {
+            float: right;
+        }
+        li {
+         list-style: none;
+         display: inline;
+        }
+        @media (max-width: 800px) {
+        body {
+            width: fit-content;
+        }
         }
     </style>
 </head>
 <body>
-    <div class="container">
         <div class="todoDiv">
-            <div class="title todo">
-                <h1>To-Do</h1>
-            </div>
+            <div class="title todo"> To-Do </div>
+            <div class="output"></div>
             <div class="form">
                 <textarea> </textarea>
-                <button> Submit </button>
+                <button class="submit" data-name="todo"> Submit </button>
             </div>
         </div>
         <div class="doingDiv">
-            <div class="title doing">
-                <h1> Doing </h1>
-            </div>
-            <div class="form">
+            <div class="title doing"> Doing </div>
+            <div class="output"></div>
+            <div class="form" >
                 <textarea> </textarea>
-                <button> Submit </button>
+                <button class="submit" data-name="doing"> Submit </button>
             </div>
         </div>
         <div class="doneDiv">
-            <div class="title done">
-                <h1> Done</h1>
-            </div>
+            <div class="title done"> Done </div>
+            <div class="output"></div>
             <div class="form">
                 <textarea> </textarea>
-                <button> Submit </button>
+                <button class="submit" data-name="done"> Submit </button>
             </div>
         </div>
         <div class="approvedDiv">
-            <div class="title approved">
-                <h1> Approved </h1>
-            </div>
+            <div class="title approved"> Approved </div>
+            <div class="output"></div>
             <div class="form">
                 <textarea> </textarea>
-                <button> Submit </button>
+                <button class="submit" data-name= "approved"> Submit </button>
             </div>
         </div>
-    </div>
-    
+        <div>
+            <button onclick="undo()" class="undo"> Undo </button>
+          </div>
+        <script>
+            let storage = JSON.parse(localStorage.getItem('storage')) || []
+            const buttons = document.querySelectorAll('button')
+            const inputs = document.querySelectorAll('textarea')
+            const uiElements = document.querySelectorAll('.output')
+
+
+            function removeTask(e) {                
+                const index = e.target.id
+                const ifDelete = confirm('Are you sure you want to remove it?')
+                if (ifDelete) {
+                    storage.splice(index, 1)
+                    localStorage.setItem('storage', JSON.stringify(storage))
+                } 
+            }
+
+            function goLeft(e) {
+                switch(e.target.dataset.name) {
+                    case "approved":
+                        removeTask(e)
+                        console.log(e.target.id)
+                        break;
+                    case "done":
+                        console.log(e.target)
+                    case "doing":
+                        console.log(e.target)   
+                }
+            }
+
+            function showInUI() {
+                uiElements[0].innerHTML = storage.map((task, i) => {
+                    if (task.todo)
+                        return `<div class="task">
+                                    <li id="${i}">
+                                        ${task.todo}
+                                    </li>
+                                    <button class="Rightarrows" data-name="todo" id= ${i}> > </button>                                 
+                                </div>`
+                }).join('') 
+                uiElements[1].innerHTML = storage.map((task, i) => {
+                    if (task.doing)
+                        return `<div class="task">
+                                    <button class="Leftarrows" data-name="doing" id=${i} > < </button>
+                                        <li id="${i}">                                      
+                                            ${task.doing}                                           
+                                        </li>
+                                    <button class="Rightarrows"> > </button>                                  
+                                </div>`
+                }).join('') 
+                uiElements[2].innerHTML = storage.map((task, i) => {
+                    if (task.done)
+                        return `<div class="task">        
+                                 <button class="Leftarrows" data-name='done' id=${i}> < </button>                            
+                                    <li id="${i}">
+                                            ${task.done}
+                                    </li>
+                                    <button class="Rightarrows"> > </button>                                  
+                                </div>`
+                }).join('') 
+                uiElements[3].innerHTML = storage.map((task, i) => {
+                    if (task.approved)
+                    return `<div class="task">  
+                                <button class="Leftarrows" data-name='approved' id=${i}> < </button>                                
+                                <li id="${i}"> ${task.approved} </li>
+                            </div>`
+                }).join('')
+                const liElements = document.querySelectorAll('li')
+                const leftArrows = document.querySelectorAll('.Leftarrows')               
+                leftArrows.forEach((arrow) => arrow.addEventListener('click', goLeft))
+                liElements.forEach((li) => li.addEventListener('click', removeTask))
+            }
+            function addToList (e) {
+                let val
+                if (e.target.dataset.name === 'todo') {
+                    val = inputs[0].value
+                    if (val === ' ') return
+                    storage.push({'todo': val})
+                    inputs[0].value = ''
+                }
+                if (e.target.dataset.name === 'doing') {
+                    val = inputs[1].value
+                    if (val === ' ') return
+                    storage.push({'doing': val})
+                    inputs[1].value = ''
+                }
+                if (e.target.dataset.name === 'done') {
+                    val = inputs[2].value
+                    if (val === ' ') return
+                    storage.push({'done': val})
+                    inputs[2].value = ''  
+                }
+                if (e.target.dataset.name === 'approved') {
+                    val = inputs[3].value
+                    if (val === ' ') return
+                    storage.push({'approved': val})
+                    inputs[3].value = ''
+                }
+
+                localStorage.setItem('storage', JSON.stringify(storage))
+                showInUI()
+            }
+
+            showInUI()
+           
+            buttons.forEach((button) => button.addEventListener('click', addToList))
+            
+        </script>
+
 </body>
 </html>
