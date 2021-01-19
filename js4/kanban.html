@@ -128,11 +128,29 @@
             let actions = []
 
             function undo() {
-                actions.map((action) => {
-                    if(action['delete']) {
-                        
+                const action = actions.pop()
+                if (action && action['delete']) {
+                    const type = action['delete'].dataset.type
+                    const val = action['delete'].dataset.name
+                    if(action['delete'].classList.contains('lefts')) {
+                        // means it is left swap
+                        console.log(name)
                     }
-                })
+                    if(action['delete'].classList.contains('rights')) {
+                        // means it is right swap
+                        console.log(val)
+                    }
+                    else {
+                        storage.push({[type]: val})
+                    }
+                    
+                }
+                if (action && action['add']) {
+                    storage.splice(action['add'], 1)
+                    localStorage.setItem('storage', JSON.stringify(storage))
+                }       
+                localStorage.setItem('storage', JSON.stringify(storage))
+                showInUI()  
             }
 
             function removeTask(e) {
@@ -153,7 +171,7 @@
                 localStorage.setItem('storage', JSON.stringify(storage))
                 // remove the old one
                 removeTask(e)
-                actions.push({'swap' : data}) // for undo
+               // actions.push({'swap' : data}) // for undo
                 showInUI()  
                 }
 
@@ -166,7 +184,7 @@
                     if (task[type])
                         return `<div class="task">
                                 <div class="lefts arrow" id =${i} data-type= ${type} data-name= ${task[type]}> ${left} </div>  
-                                    <li id="${i}">
+                                    <li id="${i}" data-type= ${type} data-name = ${task[type]}>
                                         ${task[type]}
                                     </li>
                                     <div class="rights arrow" id=${i} data-type= ${type} data-name= ${task[type]}> ${right} </div>                                 
@@ -178,6 +196,7 @@
                 const arrows = document.querySelectorAll('.arrow')   
                 // swap          
                 arrows.forEach((arrow) => arrow.addEventListener('click', swap))
+
                 // remove
                 liElements.forEach((li) => li.addEventListener('click', (e) => {
                     const ifDelete = confirm('Are you sure you want to remove it?')
@@ -190,10 +209,10 @@
                 let type = e.target.dataset.name // todo, doing, done or approved
                 let val = inputs[type].value // get its value
                 if (val === ' ') return
-                inputs[type].value = '' 
+                inputs[type].value = ''
                 // add to local storage, example; {0: todoValue}
                 storage.push({[type]: val})
-                actions.push({'add' : [type,val]}) // for undo
+                actions.push({'add' : storage.length - 1}) // for undo
                 localStorage.setItem('storage', JSON.stringify(storage))
                 showInUI()
             }
