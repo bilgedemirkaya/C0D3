@@ -134,11 +134,12 @@
                 const action = actions.pop()
                 if (action && action['delete']) {
                     const type = action['delete'].dataset.type
-                    const val = action['delete'].dataset.name         
+                    const val = action['delete'].dataset.name
                     if(action['delete'].classList.contains('arrow')) {
                         storage.pop()
-                    }     
-                    storage.push({[type]: val})    
+                    }
+                    console.log({[type]: val})
+                    storage.push({[type]: val })         
                 }
                 if (action && action['add']) {
                     storage.splice(action['add'], 1)
@@ -179,9 +180,9 @@
                     uiElements[type].innerHTML = storage.map((task, i) => {
                     if (task[type])
                         return `<div class="task">
-                                <div class="lefts arrow" id =${i} data-type= ${type} > ${left} </div>  
-                                <div class="li" id="${i}" data-type= ${type} > ${task[type]} </div>
-                                <div class="rights arrow" id=${i} data-type= ${type}> ${right} </div>                                 
+                                <div class="lefts arrow" id =${i} data-type= ${type} data-name=${task[type]} > ${left} </div>  
+                                <div class="li" id="${i}" data-type= ${type} data-name=${task[type]}> ${task[type]} </div>
+                                <div class="rights arrow" id=${i} data-type= ${type} data-name=${task[type]}> ${right} </div>                                 
                                 </div>`
                 }).join('')
             })
