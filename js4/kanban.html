@@ -59,23 +59,26 @@
             padding: 13px;
             margin-bottom:5px;
             font-size: 20px;
+            display: flex;
+            justify-content: stretch;
         }
-        .rights, .lefts {
+        .arrow {
             border: none;
             outline: none;
             cursor: pointer;
             font-size: large;
-            justify-content: center;
-            display: inline;
+            display: inline-block;
+            align-items: stretch;
+            align-self: center;
+            margin: 10px;
+            
         }
-        .rights {
-            float: right;
-        }
-        li {
-         margin-left:3px;
-         list-style: none;
-         display: inline;
+        .li {
+         margin:10px;  
+         display: inline-block;
          cursor: pointer;
+         font-size: 20px;
+         width: 100%;
         }
         @media (max-width: 800px) {
         body {
@@ -89,32 +92,32 @@
             <div class="title todo"> To-Do </div>
             <div class="output"></div>
             <div class="form">
-                <textarea> </textarea>
-                <button class="submit" data-name="0"> Submit </button>
+                <textarea rows="6"> </textarea>
+                <button class="submit" data-type="0"> Submit </button>
             </div>
         </div>
         <div class="doingDiv">
             <div class="title doing"> Doing </div>
             <div class="output"></div>
             <div class="form" >
-                <textarea> </textarea>
-                <button class="submit" data-name="1"> Submit </button>
+                <textarea rows="6"> </textarea>
+                <button class="submit" data-type="1"> Submit </button>
             </div>
         </div>
         <div class="doneDiv">
             <div class="title done"> Done </div>
             <div class="output"></div>
             <div class="form">
-                <textarea> </textarea>
-                <button class="submit" data-name="2"> Submit </button>
+                <textarea rows="6"> </textarea>
+                <button class="submit" data-type="2"> Submit </button>
             </div>
         </div>
         <div class="approvedDiv">
             <div class="title approved"> Approved </div>
             <div class="output"></div>
             <div class="form">
-                <textarea> </textarea>
-                <button class="submit" data-name= "3"> Submit </button>
+                <textarea rows="6"> </textarea>
+                <button class="submit" data-type= "3"> Submit </button>
             </div>
         </div>
         <div>
@@ -125,25 +128,17 @@
             const buttons = document.querySelectorAll('.submit')
             const inputs = document.querySelectorAll('textarea')
             const uiElements = document.querySelectorAll('.output')
-            let actions = []
+            const actions = []
 
             function undo() {
                 const action = actions.pop()
                 if (action && action['delete']) {
                     const type = action['delete'].dataset.type
-                    const val = action['delete'].dataset.name
-                    if(action['delete'].classList.contains('lefts')) {
-                        // means it is left swap
-                        console.log(name)
-                    }
-                    if(action['delete'].classList.contains('rights')) {
-                        // means it is right swap
-                        console.log(val)
-                    }
-                    else {
-                        storage.push({[type]: val})
-                    }
-                    
+                    const val = action['delete'].dataset.name         
+                    if(action['delete'].classList.contains('arrow')) {
+                        storage.pop()
+                    }     
+                    storage.push({[type]: val})    
                 }
                 if (action && action['add']) {
                     storage.splice(action['add'], 1)
@@ -163,7 +158,9 @@
 
             function swap(e) {
                 const type = e.target.dataset.type
-                const name = e.target.dataset.name
+                const index = e.target.id
+                const name = storage[index][type]
+                console.log(name)
                 let data
                 e.target.classList.contains('lefts') ?  data = {[type - 1]: name} : data = {[parseInt(type) + 1]: name}
                 // save storage new data
@@ -171,7 +168,6 @@
                 localStorage.setItem('storage', JSON.stringify(storage))
                 // remove the old one
                 removeTask(e)
-               // actions.push({'swap' : data}) // for undo
                 showInUI()  
                 }
 
@@ -183,16 +179,14 @@
                     uiElements[type].innerHTML = storage.map((task, i) => {
                     if (task[type])
                         return `<div class="task">
-                                <div class="lefts arrow" id =${i} data-type= ${type} data-name= ${task[type]}> ${left} </div>  
-                                    <li id="${i}" data-type= ${type} data-name = ${task[type]}>
-                                        ${task[type]}
-                                    </li>
-                                    <div class="rights arrow" id=${i} data-type= ${type} data-name= ${task[type]}> ${right} </div>                                 
+                                <div class="lefts arrow" id =${i} data-type= ${type} > ${left} </div>  
+                                <div class="li" id="${i}" data-type= ${type} > ${task[type]} </div>
+                                <div class="rights arrow" id=${i} data-type= ${type}> ${right} </div>                                 
                                 </div>`
                 }).join('')
             })
                 
-                const liElements = document.querySelectorAll('li')
+                const liElements = document.querySelectorAll('.li')
                 const arrows = document.querySelectorAll('.arrow')   
                 // swap          
                 arrows.forEach((arrow) => arrow.addEventListener('click', swap))
@@ -202,12 +196,11 @@
                     const ifDelete = confirm('Are you sure you want to remove it?')
                     if (ifDelete) removeTask(e)
                 }))
-                console.log(actions)
             }
 
             function addToList (e) {
-                let type = e.target.dataset.name // todo, doing, done or approved
-                let val = inputs[type].value // get its value
+                const type = e.target.dataset.type // todo, doing, done or approved
+                const val = inputs[type].value // get its value
                 if (val === ' ') return
                 inputs[type].value = ''
                 // add to local storage, example; {0: todoValue}
