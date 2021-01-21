@@ -128,85 +128,106 @@
             const buttons = document.querySelectorAll('.submit')
             const inputs = document.querySelectorAll('textarea')
             const uiElements = document.querySelectorAll('.output')
-            const actions = []
+            let actions = []
 
             function undo() {
                 const action = actions.pop() // get the last action
                 if (action && action['delete']) {
-                    const type = action['delete'].dataset.type
-                    const val = action['delete'].dataset.name
-                    if(action['delete'].classList.contains('arrow')) // means it was a swap action
-                        storage.pop()
-                    storage.push({[type]: val })
+                    if (action['target'].classList.contains('arrow')) {
+                        // swap
+                        const val = action['delete']['val']
+                        let i = storage.map((item) => {return item.val}).indexOf(val)
+                        storage.splice(i,1)
+                    }
+                    storage.push(action['delete'])
                 }
-                if (action && action['add']) 
-                    storage.pop()                             
+                if (action && action['add'] )
+                    storage.pop()
+                showInUI()
                 localStorage.setItem('storage', JSON.stringify(storage))
-                showInUI()  
             }
 
-            function removeTask(e) {
-                    const data = e.target
-                    storage.splice(data.id, 1)
+            function Task(type, val, index) {
+                this.type = type
+                this.val = val
+                this.index = index
+
+                this.addToStorage = () => {
+                    storage.push({'type': this.type, 'val': this.val})
+                    actions.push({'add' : this}) // for undo
                     localStorage.setItem('storage', JSON.stringify(storage))
-                    actions.push({'delete' : data }) // for undo
-                    showInUI() 
-            }
-
-            function swap(e) {
-                const type = e.target.dataset.type // todo = 0, doing=1, done=2,approved=3
-                const index = e.target.id
-                const task = storage[index][type] // data example = {0: 'learn react'}
-                let data
-                e.target.classList.contains('lefts') ?  data = {[type - 1]: task} : data = {[parseInt(type) + 1]: task}
-                // save storage new data
-                storage.push(data)
-                // remove the old one
-                removeTask(e)
-                showInUI()  
+                    showInUI()
                 }
 
-            function showInUI() {
-                const types = [0,1,2,3] // todo, doing, done or approved
-                types.map((type) => {
-                    const right = type == types.length - 1 ? '' : '>'
-                    const left = type == 0 ? '' : '<'
-                    uiElements[type].innerHTML = storage.map((task, i) => {
-                    if (task[type])
-                        return `<div class="task">
-                                <div class="lefts arrow" id =${i} data-type= ${type} data-name=${task[type]} > ${left} </div>  
-                                <div class="li" id="${i}" data-type= ${type} data-name=${task[type]}> ${task[type]} </div>
-                                <div class="rights arrow" id=${i} data-type= ${type} data-name=${task[type]}> ${right} </div>                                 
-                                </div>`
-                }).join('')
-            })
-                
-                const liElements = document.querySelectorAll('.li')
-                const arrows = document.querySelectorAll('.arrow')   
-                // swap          
-                arrows.forEach((arrow) => arrow.addEventListener('click', swap))
+                this.removeTask = (e) => {
+                    storage.splice(this.index, 1)
+                    localStorage.setItem('storage', JSON.stringify(storage))
+                    actions.push({'delete' : this, 'target': e.target}) // for undo
+                    showInUI()
+                }
 
-                // remove
-                liElements.forEach((li) => li.addEventListener('click', (e) => {
-                    const ifDelete = confirm('Are you sure you want to remove it?')
-                    if (ifDelete) removeTask(e)
-                }))
-                console.log(actions)
+                this.swap = (e) => {  
+                    const type = parseInt(this.type)
+
+                    // save storage new data
+                    e.target.classList.contains('lefts') ? 
+                    storage.push({'type': type - 1, 'val':this.val}) : 
+                    storage.push({'type': type + 1, 'val':this.val})
+
+                    // remove the old one
+                   this.removeTask(e)
+                }
+
+                this.createDiv = (index) => {
+                    const right = this.type == 3 ? '' : '>'
+                    const left = this.type == 0 ? '' : '<'
+                    const element = document.createElement('div')
+                    element.classList.add('task')
+                    element.innerHTML =    `
+                            <div class="lefts arrow"> ${left} </div>  
+                            <div class="li" id =${this.index}> ${this.val} </div>
+                            <div class="rights arrow"> ${right} </div>
+                        ` 
+                    uiElements[this.type].append(element)
+
+                    element.addEventListener('click', (e) => {
+                        if(e.target.classList.contains('li')) { // delete
+                            const yes = confirm(`Do you really want to delete ${this.val}?`)
+                            if (yes) 
+                                this.removeTask(e)
+                        }
+                        if(e.target.classList.contains('arrow')) { // swap
+                            this.swap(e)
+                        }
+                    })
+
+                }
             }
 
-            function addToList (e) {
+            function showInUI () {
+                uiElements.forEach((e) => e.innerHTML = '')
+                storage.map((item, index) => {
+                    const type = item['type']
+                    const val = item['val']
+                    const task = new Task(type,val,index)
+                    task.createDiv()
+            })
+            }
+
+            function createTask (e) {
                 const type = e.target.dataset.type // todo, doing, done or approved
                 const val = inputs[type].value // get its value
-                if (val === ' ') return
+                if (val === '') return
                 inputs[type].value = ''
-                // add to local storage, example; {0: todoValue}
-                storage.push({[type]: val})
-                actions.push({'add' : 1}) // for undo
-                localStorage.setItem('storage', JSON.stringify(storage))
-                showInUI()
+
+                const index = storage.length
+                const newTask = new Task(type, val, index)
+                newTask.addToStorage()
             }
-            showInUI()          
-            buttons.forEach((button) => button.addEventListener('click', addToList))     
+
+
+            showInUI()
+            buttons.forEach((button) => button.addEventListener('click', createTask))
         </script>
 
 </body>
