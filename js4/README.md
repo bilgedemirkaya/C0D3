@@ -6,4 +6,4 @@ demo for google scope => https://bilgedemirkaya.github.io/C0D3/js4/googlescope.h
 
 demo for ligths off game => https://bilgedemirkaya.github.io/C0D3/js4/lightsoff.html
 
-demo for kanban project => https://bilgedemirkaya.github.io/C0D3/js4/kanban.html
+demo for kanban project => https://bilgedemirkaya.github.io/C0D3/js4/kanbanwithclasses.html
