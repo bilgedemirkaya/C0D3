@@ -85,7 +85,7 @@ container.addEventListener('mousedown', (e) => {
         mouse.style.top = `${cursorTop}px` 
         mouse.style.left = `${cursorLeft}px`
 
-        //console.log(cursorTop, cursorLeft)
+        console.log(cursorTop, cursorLeft)
        // calculate the coords for selection boxes
         const beginRow = Math.floor(cursorTop / 110) // 110 is box width with the margin
         const finishRow = Math.floor((cursorTop + height) / 110) 
@@ -133,7 +133,7 @@ container.addEventListener('mousedown', (e) => {
     z-index: -1;
 }
 .container {
-    margin: auto;
+   
     width: 550px;
 }
 .selected {
