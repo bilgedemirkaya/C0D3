@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mine Sweeper</title>
+    <style>
+        .box {
+            width: 50px;
+            height: 50px;
+            border: 1px black solid;
+            box-sizing: border-box;
+            display: inline-block;
+            padding: 5px;
+            vertical-align: top;
+            background: rgb(229, 226, 226);
+            cursor:pointer;
+        }
+        .container {
+            margin: auto;
+        }
+        .revealed {
+            background: grey;
+            text-align: center;
+            cursor: default;
+        }
+
+    </style>
+</head>
+<body>
+    <h1 style="margin:auto; width: 300px;"> Mine Sweeper Game </h1>
+    <div class="container"></div>
+    <script>
+        const container = document.querySelector('.container')
+        let blocks = []
+        let count = 0 // revealed box count to find out how many revealed in total
+        const totalBomb = 10
+        const size = 10
+        const gridSize = size * size 
+
+        function Block (row, col) {
+            this.row = row
+            this.col = col
+            this.isBomb = false
+            this.isRevealed = false
+            this.neighborBombCount = 0
+
+            // create div with this object and append it to DOM
+            const element = document.createElement('div')
+            element.classList.add('box')
+            container.append(element)
+            
+            this.putBombs = () => {
+                this.isBomb = true
+                element.classList.add('bomb')
+            }
+                        
+
+            this.findNeighbors = () => {
+                let neighbors = []
+
+                const a = blocks[row + 1] && blocks[row + 1][col]
+                const b = blocks[row - 1] && blocks[row - 1][col]
+                const c = blocks[row][col + 1] && blocks[row][col + 1]
+                const d = blocks[row][col - 1] && blocks[row][col - 1]
+                const e = blocks[row + 1] && blocks[row + 1][col - 1]
+                const f = blocks[row + 1] && blocks[row + 1][col + 1]
+                const g = blocks[row - 1] && blocks[row - 1][col - 1]
+                const h = blocks[row - 1] && blocks[row - 1][col + 1]
+
+                neighbors.push(a,b,c,d,e,f,g,h)
+                neighbors = neighbors.filter((el) =>  el) // remove undefined 
+
+                // find neighbor bomb counts
+                neighbors.forEach(e => { 
+                    if (e.isBomb) 
+                        this.neighborBombCount += 1   
+                })
+
+                return neighbors // return array of neighbors
+            }
+
+            this.reveal = () => {
+                element.classList.add('revealed')
+                this.isRevealed = true
+            }
+
+            this.winGame = () => {
+                console.log(count)
+                count++ 
+               if (count == gridSize - totalBomb) 
+                   return true
+
+                return false
+            }
+
+            this.revealAll = () => { 
+                this.reveal() // reveal the clicked box first
+               
+                if (this.winGame()) {
+                    const again = confirm('You Won! Play Again?')
+                    if (again) 
+                        location.reload()
+                }
+                let neighbors = this.findNeighbors() 
+
+                if (this.neighborBombCount > 0)  // if it is near a bomb
+                    element.innerHTML = this.neighborBombCount
+                
+                                
+                else { // if there is no bomb in neighbors
+                    neighbors.forEach(e => {
+                        if(e.neighborBombCount === 0 && e.isRevealed == false && !e.isBomb) // check if bombCount is 0
+                             e.revealAll() // contunie recursively
+                     })
+                }
+            }
+            
+            element.addEventListener('click', (e) => {
+                if (this.isRevealed) return
+                if (this.isBomb) {
+                   // game over
+                   const again = confirm('You Lose. Play Again?')
+                   return again ? location.reload() : element.innerHTML = 'B'
+               }
+               else { // clicked object is not a bomb
+                    this.revealAll() 
+                }
+            })
+        }
+        
+        const makeGrid = (arr, row = 0, col = 0, tmp = []) => {
+            if(col === size) // grid finished
+                        return
+            if (row === size) { // row finished 
+                arr.push(tmp)
+                return makeGrid(arr, 0, col + 1, [])
+            }
+            tmp.push(new Block(col, row))
+            return makeGrid(arr, row + 1, col, tmp)
+        }
+
+        function getRandomInt() {
+            return Math.floor(Math.random() * size)
+        }
+
+        const startGame = () => {
+            container.style.width = `${500}px`
+            blocks = []
+
+            makeGrid(blocks)
+
+            // put bombs randomly
+            for (let i = 0; i < totalBomb;) {
+                const randomx = getRandomInt()
+                const randomy = getRandomInt()
+
+                if (!blocks[randomx][randomy].isBomb) { // if it is not already a bomb
+                    blocks[randomx][randomy].putBombs()
+                    i++
+                }
+            }
+        }
+        startGame()
+
+    </script>
+</body>
+</html>
+
+
+  
