@@ -1,125 +1,11 @@
-<div class='container'></div>
 
-<script>
-  const container = document.querySelector('.container')
-  let dragging // to check if mouseover is actually dragging
-  let mouseX, mouseY // to determine starting point for mouse square
-  let boxes = [] // to append square objects later
-
-function Box (row,column) {
-  this.row = row
-  this.column = column
-
-  const element = document.createElement('div')
-  element.classList.add('box')
-  container.append(element)
-
-  this.select = () => {
-    element.classList.add("selected")
-  }
-  this.unselect = () => {
-    element.classList.remove("selected")
-  }
-}
-
-const makeBoxes = (value) => {
-    if (!value)  return
-    
-    const order = 25 - value
-    const column = order % 5
-    const row = Math.floor(order / 5)
-    
-    boxes.push(new Box(row, column)) 
-
-    makeBoxes(value - 1)
-  }
-makeBoxes(25) // create grid
-
-container.addEventListener('mousedown', (e) => {
-
-  // first clear previous selections
-   boxes.forEach((block) => {
-       block.unselect()
-    })
-
-    dragging = true
-
-    // create an element for drawing square as mouse moves
-    const mouse = document.createElement('div')
-    mouse.classList.add('mouse')
-    container.append(mouse)
-
-    // starting point
-    mouseX = e.clientX
-    mouseY = e.clientY
-
-  })
-  
-	container.addEventListener('mouseover', (e) => {
-
- 
-      const mouse = document.querySelector('.mouse')
-
-      if (mouse !== null && dragging) {
-
-         // calculate the distance between starting point and current position
-        const top = e.clientY - mouseY
-        const left = e.clientX - mouseX
-
-        // absolute values will give height && width
-        const height = Math.abs(top)
-        const width = Math.abs(left)
-        //console.log(height,width)
-        
-        // draw borders
-        mouse.style.height = `${height}px`
-        mouse.style.width = `${width}px`
-        
-        // set top and left acc to direction 
-        // if starting from the top, values will not change
-        // if starting from bottom, values will be same as where the mouse is
-        let cursorTop = top < 0 ? e.clientY : mouseY
-        let cursorLeft = left < 0 ? e.clientX : mouseX
-
-        mouse.style.top = `${cursorTop}px` 
-        mouse.style.left = `${cursorLeft}px`
-
-       // console.log(cursorTop, cursorLeft)
-       // calculate the coords for selection boxes
-        const beginRow = Math.floor(cursorTop / 110) // 110 is box width with the margin
-        const finishRow = Math.floor((cursorTop + height) / 110) 
-        const beginColumn = Math.floor(cursorLeft / 110) 
-        const finishColumn = Math.floor((cursorLeft + width) / 110) 
-        
-        /* console.log(cursorLeft + width)
-        console.log(beginRow,finishRow,beginColumn,finishColumn) */
-
-        // highlight boxes within the right coords
-        boxes.forEach((block) => {
-            if (block.row >= beginRow && block.row <= finishRow) {          
-                if (block.column >= beginColumn && block.column <= finishColumn) 
-                    block.select()            
-                else 
-                    block.unselect()
-            }
-            else 
-                block.unselect()
-            })
-        }
-        })
-      
-  // finish dragging
-   container.addEventListener('mouseup', (e) => {
-    dragging = false
-    const mouse = document.querySelector(".mouse")
-    if (mouse !== null) { // remove the mouse element from DOM
-      mouse.remove()
-    }
-}) 
-
-</script>
-
-<style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Selection Boxes</title>
+  <style>
     .box {
     width: 100px;
     height: 100px;
@@ -132,7 +18,6 @@ container.addEventListener('mousedown', (e) => {
     z-index: -1;
 }
 .container {
-   
     width: 550px;
 }
 .selected {
@@ -141,10 +26,11 @@ container.addEventListener('mousedown', (e) => {
 }
 .mouse {
   position: absolute;
-  display: inline-element;
+  display: none;
   background-color: #6969f0;
   opacity: 0.6;
   border: 1px solid  #4545ee;
+  z-index: 1;
 }
 
 body{ 
@@ -153,3 +39,120 @@ body{
 }
 
 </style>
+</head>
+<body>
+  <div class='container'>
+    <div class="mouse"></div>
+  </div>
+  <script>
+    const container = document.querySelector('.container')
+    const mouse = document.querySelector('.mouse')
+
+    let dragging // to check if mouseover is actually dragging
+    let mouseX, mouseY // to determine starting point for mouse square
+    let boxes = [] // to append square objects later
+  
+  function Box (row,column) {
+    this.row = row
+    this.column = column
+  
+    const element = document.createElement('div')
+    element.classList.add('box')
+    container.append(element)
+  
+    this.select = () => {
+      element.classList.add("selected")
+    }
+    this.unselect = () => {
+      element.classList.remove("selected")
+    }
+  }
+  
+  const makeBoxes = (value) => {
+      if (!value)  return
+      
+      const order = 25 - value
+      const column = order % 5
+      const row = Math.floor(order / 5)
+      
+      boxes.push(new Box(row, column)) 
+  
+      makeBoxes(value - 1)
+    }
+  makeBoxes(25) // create grid
+  
+  container.addEventListener('mousedown', (e) => {
+    // first clear previous selections
+     boxes.forEach((box) => {
+         box.unselect()
+      })
+      
+      dragging = true
+
+      // starting point
+      mouseX = e.clientX
+      mouseY = e.clientY
+  
+    })
+    
+  container.addEventListener('mousemove', (e) => {
+        if (mouse !== null && dragging) {
+          mouse.style.display = 'inline-block'
+
+           // calculate the distance between starting point and current position
+          const top = e.clientY - mouseY
+          const left = e.clientX - mouseX
+  
+          // absolute values will give height && width
+          const height = Math.abs(top)
+          const width = Math.abs(left)
+          //console.log(height,width)
+          
+          // draw borders
+          mouse.style.height = `${height}px`
+          mouse.style.width = `${width}px`
+          
+          
+          // set top and left acc to direction 
+          // if starting from the top, values will not change
+          // if starting from bottom, values will be same as where the mouse is
+          let cursorTop = top < 0 ? e.clientY : mouseY
+          let cursorLeft = left < 0 ? e.clientX : mouseX
+  
+          mouse.style.top = `${cursorTop}px` 
+          mouse.style.left = `${cursorLeft}px`
+  
+          //console.log(cursorTop, cursorLeft)
+         // calculate the coords for selection boxes
+          const beginRow = Math.floor(cursorTop / 110) // 110 is box width with the margin
+          const finishRow = Math.floor((cursorTop + height) / 110) 
+          const beginColumn = Math.floor(cursorLeft / 110) 
+          const finishColumn = Math.floor((cursorLeft + width) / 110) 
+          
+          /* console.log(cursorLeft + width)
+          console.log(beginRow,finishRow,beginColumn,finishColumn) */
+  
+          // highlight boxes within the right coords
+          boxes.forEach((box) => {
+              if (box.row >= beginRow && box.row <= finishRow) {          
+                  if (box.column >= beginColumn && box.column <= finishColumn) 
+                      box.select()            
+                  else 
+                      box.unselect()
+              }
+              else 
+                  box.unselect()
+              })
+          }
+      })
+        
+    // finish dragging
+    container.addEventListener('mouseup', (e) => {
+      mouse.style.display = 'none'
+      dragging = false
+  }) 
+  
+  </script>
+</body>
+</html>
+
