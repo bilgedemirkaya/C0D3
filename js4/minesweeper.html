@@ -65,6 +65,29 @@
 
         scoreDiv.innerHTML = score
 
+        function isOver () {
+                count++ 
+               if (count == gridSize - totalBomb) 
+                   return true
+                return false
+        }
+
+        function winGame () {
+            score++
+            localStorage.setItem('score', JSON.stringify(score))
+            const again = confirm('You Won! Play Again?')
+            if (again) 
+                location.reload()
+        }
+
+        function gameOver () {
+            mood.innerHTML = '😰'
+            score == 0 ? '' : score--
+            localStorage.setItem('score', JSON.stringify(score))
+            const again = confirm('You Lose. Play Again?')
+            return again ? location.reload() : element.innerHTML = '💣'
+        }
+
         function Block (row, col) {
             this.row = row
             this.col = col
@@ -117,58 +140,35 @@
                 }
             }
 
-            this.winGame = () => {
-                count++ 
-               if (count == gridSize - totalBomb) 
-                   return true
-
-                return false
-            }
-
             this.revealAll = () => { 
                 this.reveal() // reveal the clicked box first
                
-                if (this.winGame()) {
-                    score++
-                    localStorage.setItem('score', JSON.stringify(score))
-                    const again = confirm('You Won! Play Again?')
-                    if (again) 
-                        location.reload()
-                }
+                if (isOver()) 
+                    winGame()
+
                 let neighbors = this.findNeighbors() 
 
                 if (this.neighborBombCount > 0)  // if it is near a bomb
                     element.innerHTML = this.neighborBombCount
-                
-                                
+                     
                 else { // if there is no bomb in neighbors
                     neighbors.forEach(e => {
                         if(e.neighborBombCount === 0 && e.isRevealed == false && !e.isBomb) // check if bombCount is 0
-                             e.revealAll() // contunie recursively
+                             e.revealAll() // continue recursively
                      })
                 }
             }
             
             element.addEventListener('click', (e) => {
                 if (this.isRevealed) return
-                if (this.isBomb) {
-                   // game over
-                   mood.innerHTML = '😰'
-                   score == 0 ? '' : score--
-                   localStorage.setItem('score', JSON.stringify(score))
-                   const again = confirm('You Lose. Play Again?')
-                   return again ? location.reload() : element.innerHTML = '💣'
-               }
-               else { // clicked object is not a bomb
-                    this.revealAll() 
-                }
+                this.isBomb ? gameOver() : this.revealAll() 
             })
 
             // right click
             element.addEventListener("contextmenu", (e) => {
                 e.preventDefault()
-                    if (!this.isRevealed) 
-                        this.toggleFlag()
+                if (!this.isRevealed) 
+                    this.toggleFlag()
                 })
             }
         
