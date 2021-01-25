@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mine Sweeper</title>
+    <title> Mine Sweeper </title>
     <style>
         .box {
             width: 50px;
@@ -18,25 +18,52 @@
         }
         .container {
             margin: auto;
+            border: 1px solid black;
         }
         .revealed {
             background: grey;
             text-align: center;
             cursor: default;
         }
-
+        .mood {
+            margin-left: 30px;
+        }
+        .header {
+            margin:auto; 
+            width: 350px;
+            text-align: center;
+            background-color: rgb(156, 149, 138);
+            box-shadow: 5px 8px;
+        }
+        .score {
+            float:right;
+            margin-right: 10px;
+            background-color: rgb(233, 224, 224);
+            padding: 2px;
+            width: 40px;
+            border-radius: 5px;
+            -webkit-box-shadow: inset 0 0 10px #000000;
+            box-shadow:         inset 0 0 10px #000000;
+        }
     </style>
 </head>
 <body>
-    <h1 style="margin:auto; width: 300px;"> Mine Sweeper Game </h1>
-    <div class="container"></div>
+    <h1 class="header"> Mine Sweeper Game <span class="mood">😄   </span> <span class="score"> 0 </span> </h1> 
+    <div class="container" style= "margin-top: 15px;"></div>
     <script>
         const container = document.querySelector('.container')
+        const mood = document.querySelector('.mood')
+        const scoreDiv = document.querySelector('.score')
+        let score = JSON.parse(localStorage.getItem('score')) || 0
+
+
         let blocks = []
         let count = 0 // revealed box count to find out how many revealed in total
         const totalBomb = 10
         const size = 10
         const gridSize = size * size 
+
+        scoreDiv.innerHTML = score
 
         function Block (row, col) {
             this.row = row
@@ -54,8 +81,10 @@
                 this.isBomb = true
                 element.classList.add('bomb')
             }
+            this.toggleFlag = () => {
+               element.innerHTML = element.innerHTML == '' ? '🚩' : ''
+            }
                         
-
             this.findNeighbors = () => {
                 let neighbors = []
 
@@ -83,10 +112,12 @@
             this.reveal = () => {
                 element.classList.add('revealed')
                 this.isRevealed = true
+                if (element.innerHTML = '🚩') { // if revealed box has a flag, clear
+                    element.innerHTML = ''
+                }
             }
 
             this.winGame = () => {
-                console.log(count)
                 count++ 
                if (count == gridSize - totalBomb) 
                    return true
@@ -98,6 +129,8 @@
                 this.reveal() // reveal the clicked box first
                
                 if (this.winGame()) {
+                    score++
+                    localStorage.setItem('score', JSON.stringify(score))
                     const again = confirm('You Won! Play Again?')
                     if (again) 
                         location.reload()
@@ -120,14 +153,24 @@
                 if (this.isRevealed) return
                 if (this.isBomb) {
                    // game over
+                   mood.innerHTML = '😰'
+                   score == 0 ? '' : score--
+                   localStorage.setItem('score', JSON.stringify(score))
                    const again = confirm('You Lose. Play Again?')
-                   return again ? location.reload() : element.innerHTML = 'B'
+                   return again ? location.reload() : element.innerHTML = '💣'
                }
                else { // clicked object is not a bomb
                     this.revealAll() 
                 }
             })
-        }
+
+            // right click
+            element.addEventListener("contextmenu", (e) => {
+                e.preventDefault()
+                    if (!this.isRevealed) 
+                        this.toggleFlag()
+                })
+            }
         
         const makeGrid = (arr, row = 0, col = 0, tmp = []) => {
             if(col === size) // grid finished
