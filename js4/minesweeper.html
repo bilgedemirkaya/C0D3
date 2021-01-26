@@ -66,10 +66,7 @@
         scoreDiv.innerHTML = score
 
         function isOver () {
-                count++ 
-               if (count == gridSize - totalBomb) 
-                   return true
-                return false
+               return count == gridSize - totalBomb
         }
 
         function winGame () {
@@ -135,9 +132,9 @@
             this.reveal = () => {
                 element.classList.add('revealed')
                 this.isRevealed = true
-                if (element.innerHTML = '🚩') { // if revealed box has a flag, clear
-                    element.innerHTML = ''
-                }
+                count++ 
+                if (element.innerHTML = '🚩')  // if revealed box has a flag, clear
+                    element.innerHTML = '' 
             }
 
             this.revealAll = () => { 
