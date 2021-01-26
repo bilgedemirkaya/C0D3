@@ -80,6 +80,14 @@
                 location.reload()
         }
 
+        function gameOver (e) {
+                mood.innerHTML = '😰'
+                score == 0 ? '' : score--
+                localStorage.setItem('score', JSON.stringify(score))
+                const again = confirm('You Lose. Play Again?')
+                return again ? location.reload() : e.target.innerHTML = '💣'
+        }
+
         function Block (row, col) {
             this.row = row
             this.col = col
@@ -132,14 +140,6 @@
                 }
             }
 
-            this.gameOver = () => {
-                mood.innerHTML = '😰'
-                score == 0 ? '' : score--
-                localStorage.setItem('score', JSON.stringify(score))
-                const again = confirm('You Lose. Play Again?')
-                return again ? location.reload() : element.innerHTML = '💣'
-            }
-
             this.revealAll = () => { 
                 this.reveal() // reveal the clicked box first
                
@@ -161,7 +161,7 @@
             
             element.addEventListener('click', (e) => {
                 if (this.isRevealed) return
-                this.isBomb ? this.gameOver() : this.revealAll() 
+                this.isBomb ? gameOver(e) : this.revealAll() 
             })
 
             // right click
@@ -209,6 +209,3 @@
     </script>
 </body>
 </html>
-
-
-  
