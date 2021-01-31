@@ -57,10 +57,29 @@ function Todo (todo, container) {
     const $h1 = todoContainer.querySelector('h1')
     $h1.addEventListener('click', () => {
       // Update the todo element with the opposite complete status
+      fetch(`https://js5.c0d3.com/todolist/api/todos/${todo.id}`,
+      {
+        method:'PATCH',
+        credentials: 'include',
+        headers: {
+        'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          complete: !todo.complete
+        })
+      })
+      .then(res => res.json())
+      .then( (data) => render(data))
     })
     const $delete = todoContainer.querySelector('.delete')
     $delete.addEventListener('click', () => {
       // Delete the todo element from the server
+      fetch(`https://js5.c0d3.com/todolist/api/todos/${todo.id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      })
+      .then(res => res.json())
+      .then( (data) => render(data))
     })
   }
   const renderEdit = () => {
@@ -77,6 +96,19 @@ function Todo (todo, container) {
     const $save = todoContainer.querySelector('.save')
     $save.addEventListener('click', () => {
       // Update the todo element with new text
+      fetch(`https://js5.c0d3.com/todolist/api/todos/${todo.id}`,
+      {
+        method:'PATCH',
+        credentials: 'include',
+        headers: {
+        'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          text: $todoInput.value,
+        })
+      })
+      .then(res => res.json())
+      .then( (data) => render(data))
     })
   }
   renderNormal()
@@ -100,11 +132,32 @@ const render = () => {
   input.addEventListener('keyup', (e) => {
     if (e.key==='Enter') {
       // Tell the server to create a todo item!
+      fetch('https://js5.c0d3.com/todolist/api/todos',{
+        method:'POST',
+        headers: {
+        'content-type': 'application/json'
+      }, 
+      credentials: 'include',
+      body: JSON.stringify({
+        text: input.value
+      })})
+      .then(res => res.json)
+      .then(render)
     }
   })
 
   const $todolist = $appContainer.querySelector('.todolist')
   // create a Todo object like this: new Todo(element, $todolist)
+
+  fetch('https://js5.c0d3.com/todolist/api/todos', {
+    credentials: 'include'
+  })
+  .then(res=> res.json())
+  .then( (data) => {
+    data.forEach(element => {
+      new Todo(element, $todolist)
+    });
+  })
 }
 
 let globalUsername
@@ -127,6 +180,25 @@ const setupLogin = () => {
   })
   $submit.addEventListener('click', () => {
     // Login button click
+    fetch('https://js5.c0d3.com/auth/api/sessions', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json'
+      }, 
+      credentials: 'include',
+      body: JSON.stringify({
+        username: $username.value,
+        password: btoa($password.value)
+  })})
+  .then(res => res.json())
+  .then( (data) => {
+    console.log(data)
+    if (data.username) {
+     globalUsername = data.username
+     render()
+    }
+    
+  })
   })
 }
 
@@ -152,13 +224,45 @@ const setupSignup = () => {
     setupLogin()
   })
   $submit.addEventListener('click', () => {
-    // signup button click
+    fetch('https://js5.c0d3.com/auth/api/users', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json'
+      }, 
+      credentials: 'include',
+      body: JSON.stringify({
+        username: $username.value,
+        name: $name.value,
+        email: $email.value,
+        password: btoa($password.value)
+  })})
+  .then(res => res.json())
+  .then( (data) => {
+    if (data.status == 200) {
+      console.log(data)
+     globalUsername = data.username
+     render()
+    }
+  })
   })
 }
 
 const $appContainer = document.querySelector('.app-container')
+
 const startApp = () => {
-  // 1. Start here!
+ fetch("https://js5.c0d3.com/auth/api/sessions",{
+  credentials: 'include',
+ })
+ .then(res => res.json())
+ .then( (data) => {
+   if(data.error) {
+     setupLogin()
+   }
+   if(data.username) {
+      globalUsername = data.username
+      render()
+    }
+ })
 }
 startApp()
 </script>
