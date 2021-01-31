@@ -238,10 +238,9 @@ const setupSignup = () => {
   })})
   .then(res => res.json())
   .then( (data) => {
-    if (data.status == 200) {
-      console.log(data)
-     globalUsername = data.username
-     render()
+    if(body.username) {
+      globalUsername = body.username
+      render()
     }
   })
   })
