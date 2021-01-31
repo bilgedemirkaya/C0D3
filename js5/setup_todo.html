@@ -192,7 +192,6 @@ const setupLogin = () => {
   })})
   .then(res => res.json())
   .then( (data) => {
-    console.log(data)
     if (data.username) {
      globalUsername = data.username
      render()
@@ -238,8 +237,8 @@ const setupSignup = () => {
   })})
   .then(res => res.json())
   .then( (data) => {
-    if(body.username) {
-      globalUsername = body.username
+    if(data.username) {
+      globalUsername = data.username
       render()
     }
   })
