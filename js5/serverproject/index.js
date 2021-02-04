@@ -1,4 +1,5 @@
-const express = require('express') 
+const express = require('express')
+const fs = require('fs')
 
 const app = express() // Use the express library to create an app
 
@@ -46,11 +47,28 @@ app.get('/count', async (req, res) => {
 })
 
 app.get('/delay', async (req, res) => {
+  const num = req.query.time
+  console.log(num)
   setTimeout(() => {
     return res.send(`
-    <h1>Your request has been delayed by 5 seconds</h1>
+    <h1>Your request has been delayed by ${num} seconds</h1>
   `)
-  }, 5000)
+  }, num)
+})
+
+app.get('/messages', async (req, res) => {
+  const arr = []
+  const body = req.body
+  console.log(body) 
+  res.send('<div class="container"><input> </input> <button> Submit </button></div><script></script>')
+})
+
+
+app.get('/delay/:num', async (req, res) => {
+  const num = req.params.num
+  setTimeout(() => {
+    return res.send(`<h1>Your request has been delayed by ${num} seconds</h1>`)
+  }, num * 1000 )
 })
 
 let visitorId = 0
@@ -81,4 +99,52 @@ app.get('/ab', (req, res) => {
 })
 
 
+const noteFile = './notes'
+let notes = []
+fs.readFile(noteFile, (err, data) => {
+  if (err) {
+    return console.log(err)
+  }
+  const str = data.toString()
+  if (str) {
+   notes = JSON.parse(str)
+  }
+})
+app.get('/notes', (req, res) => {
+  const noteListString = notes.reduce((acc, note) => {
+    return acc + `
+    <h3>${note}</h3>
+    `
+  }, '')
+  res.send(`
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/andybrewer/mvp/mvp.css" />
+  <main>
+  ${noteListString}
+  <hr />
+  <textarea class="noteInput" name="" cols="30" rows="10"></textarea>
+  <button class="noteSubmit">Submit</button>
+  <script>
+  const textarea = document.querySelector('.noteInput')
+  const submit = document.querySelector('.noteSubmit')
+  submit.addEventListener('click', () => {
+    const value = textarea.value
+    fetch('./notes/add?content=' + value)
+    textarea.value = ''
+    alert('submitted. Refreshing the page to see your message')
+    window.location.reload()
+  })
+  </script>
+  `)
+})
+
+app.get('/notes/add', (req, res) => {
+  const content = req.query.content
+  if (!content) {
+    return res.status(400).send('Please provide a content query parameter')
+  }
+  notes.unshift(content)
+  notes = notes.splice(0, 5)
+  fs.writeFile(noteFile, JSON.stringify(notes), () => {})
+  res.json(notes)
+})
 app.listen(3000) // Your app needs to listen to a port number.
