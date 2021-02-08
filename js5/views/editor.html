@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style type="text/css" media="screen">
+        .leftSide {
+            position: absolute;
+            top: 50px;
+            left: 0;
+            bottom: 0;
+            width: 300px;
+          box-sizing: border-box;
+        }
+        .filecontainer {
+          display: flex;
+          justify-content: space-between;
+          padding: 0 10px;
+          margin-bottom: 5px;
+          background-color: #eee;
+        }
+        .file__open {
+          color: #9fa;
+          font-size: 25px;
+          padding: 0px;
+          margin: 0px;
+          cursor:pointer;
+        }
+        #editor { 
+            position: absolute;
+            top: 50px;
+            right: 0;
+            bottom: 0;
+            left: 300px;
+        }
+        .filename__input {
+          height: 40px;
+          width: 100%;
+          font-size: 15px;
+        }
+        .file__create-button {
+          width: 200px;
+          font-size: 15px;
+        }
+        .container {
+          display: flex;
+        }
+        .file {
+          cursor: pointer;
+        }
+        </style>
+        
+</head>
+<body>
+    
+<div class="container">
+    <input class="filename__input" type="text" placeholder="File Name">
+    <button class="file__create-button">Create File</button>
+    </div>
+    
+    <div id="editor"></div>
+    <div class="leftSide">
+      <div class="filelist"></div>
+    </div>
+    
+    <script src="//ajaxorg.github.io/ace-builds/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="//ajaxorg.github.io/ace-builds/src-min-noconflict/ext-modelist.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+    const editor = ace.edit("editor")
+    editor.setTheme("ace/theme/twilight")
+    
+    const input = document.querySelector('.filename__input')
+    const createButton = document.querySelector('.file__create-button')
+    const filelist = document.querySelector('.filelist')
+    
+    createButton.addEventListener('click', (e) => {
+        const name = input.value
+        const content = editor.getValue()
+      fetch('/api/files', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          name,
+          content
+        })
+      }).then( (res) => {
+        location.reload()
+      })
+    })
+
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "js5",
+  "version": "1.0.0",
+  "description": "demo for Todo with auth project => https://bilgedemirkaya.github.io/C0D3/js5/setup_todo.html",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
