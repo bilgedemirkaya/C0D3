@@ -11,21 +11,9 @@ app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 
 const fiveMin = 5 * 60 * 1000 /* ms */
-const files = {}
-
-app.get('/', (req, res) => {
-  fs.readdir(`${__dirname}/public`, (err, files) => {
-    res.send( files.reduce((acc, f) => {
-      return acc + `
-      <div>
-        <a href="/${f}" target="__blank">${f}</a>
-      </div>
-      `
-    }, ''))
-  })
-})
 
 async function getAll() {
+const files = {}
   // get all files and display in DOM
   fs.readdir(filesPath, (err, data) => {
     if (err) throw err
@@ -33,10 +21,12 @@ async function getAll() {
       fs.readFile(`${filesPath}/${filename}`, 'utf8', (err, content) => {
         if (err) throw err
         files[filename] = {date : Date.now(), content} // initialize the files object
+        console.log(files)
       })
     })
  })
   
+ console.log(files)
  app.get('/files', (req, res) => {
     res.sendFile(path.join(views, 'editor.html'))
   })
@@ -50,6 +40,7 @@ async function getAll() {
     res.send('ok')
   })
   
+  console.log(files)
   // to get the an array containing all the files
   app.get('/api/files', (req, res) => {
    return fs.readdir(filesPath, (err, data) => {
