@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webcam</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+</head>
+<body>
+    <div class="container">
+            <canvas class="photo"></canvas>
+            <video class="player"></video>
+            <div class="strip"></div>
+            <button type="submit" class="btn btn-success" onCLick="paintToCanvas()">
+              Take Picture
+            </button>
+        <hr>
+            <h3>Images</h3>
+            <div class="images"></div>
+    </div>
+        <script>
+              
+        const video = document.querySelector('.player')
+        const canvas = document.querySelector('.photo')
+        const context = canvas.getContext('2d')
+        const strip = document.querySelector('.strip')
+        const images = document.querySelector('.images')
+
+        function getVideo() {
+            navigator.mediaDevices.getUserMedia({video:true,audio:false}) // returns a promise
+            .then(localMediaStream => {
+                // console.log(localMediaStream)
+                video.srcObject = localMediaStream
+                video.play()
+                })
+            .catch(err => console.error(err))
+        }
+
+        function paintToCanvas() {
+            const width  = video.videoWidth
+            const height = video.videoHeight
+
+            // explicitly made canvas width height as properties
+            canvas.width = width
+            canvas.height = height
+            context.drawImage(video, 0, 0, width, height)
+
+           // take the data and send to server
+            const data = canvas.toDataURL('image/jpeg')
+            const encodedImageData = data.split("base64,")[1]
+
+            fetch("/webcam/files", {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json",
+                },
+                body: JSON.stringify({
+                    img: encodedImageData,
+                }),
+                })
+                .then( res => res.json())
+                .then( (data) => {
+                    images.innerHTML +=`<br> <a href="/webcam/files/${data.name}">${location.host}/${data.url}</a>`
+                })
+
+    }
+    getVideo()
+        </script>
+</body>
+</html>
