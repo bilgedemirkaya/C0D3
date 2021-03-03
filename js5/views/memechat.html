@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meme-chat</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<style>
+    .form-control {
+        border-radius:0;
+    }
+    .header {
+        margin: auto;
+        width:max-content;  
+    }
+    .form {
+        background-color:black;
+        color:white;
+        margin-top:1%;
+    }
+    .container {
+        margin-top:10%;
+    }
+    .btn {
+        color:black;
+        border-radius: 0;
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+    <h1 class="header">
+        Welcome to Meme Chat
+    </h1>
+    <form action="/memechat" method="post" class="form">
+        <label for="Username" style="margin-left:3px;"> Enter a username: </label>
+        <input type="text" class="form-control" name="username"> </input>
+        <hr>
+        <input type="submit" value="Submit" class="btn"> </input>
+    </form>
+</div>
+</body>
+</html>
