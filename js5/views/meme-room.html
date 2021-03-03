@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meme-room</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <style>
+        .chatroom {
+            display:none
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="header"></h1>
+        <canvas class="photo" style="display:none;"></canvas>
+        <video class="player"></video>
+        <div class="strip"></div>
+        <input type="text" class="form-control msg"> </input><br>
+        <button type="submit" class="btn btn-success" onCLick="paintToCanvas()">
+          Take Picture and Submit
+        </button>
+        <h1> Chat History</h1>
+        <div class='imageList'></div>
+        <div class="chatroom"> </div>
+    </div>
+    <script>
+
+        const $header = document.querySelector('.header')
+        const video = document.querySelector('.player')
+        const canvas = document.querySelector('.photo')
+        const context = canvas.getContext('2d')
+        const strip = document.querySelector('.strip')
+        const $message = document.querySelector('.msg')
+
+        // for loaded images
+        let $chatRoom = document.querySelector('.chatroom')
+        let $imageList = document.querySelector('.imageList')
+
+        const cookie = ("; "+document.cookie).split("; username=").pop().split(";").shift()
+
+        $header.innerHTML = ` Welcome ${cookie}`
+
+        function getVideo() {
+            navigator.mediaDevices.getUserMedia({video:true,audio:false}) // returns a promise
+            .then(localMediaStream => {
+                // console.log(localMediaStream)
+                video.srcObject = localMediaStream
+                video.play()
+                })
+            .catch(err => console.error(err))
+        }
+
+        function paintToCanvas() {
+            const width  = video.videoWidth
+            const height = video.videoHeight
+ 
+            canvas.width = width
+            canvas.height = height
+            context.drawImage(video, 0, 0, width, height)
+
+           // take the data and send to server
+            const data = canvas.toDataURL('image/jpeg')
+            const encodedImageData = data.split("base64,")[1]
+            fetch("/memechat/room", {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json",
+                },
+                body: JSON.stringify({
+                    img: encodedImageData,
+                    msg: $message.value,
+                    username: cookie
+                }),
+            }).then( () => $message.value = ' ')
+    }
+
+    function getMemes () {
+        // Get the current images
+        fetch('/memechat/api/messages', {
+            method:'GET',
+            headers: {
+            'content-type': 'application/json'
+            }
+        })
+        .then( res => res.json())
+        .then( (files) => {
+            console.log(files)
+            const filesArr = Object.keys(files)
+            filesArr.forEach( (username) => {
+                $chatRoom.innerHTML = filesArr.reduce((acc, username) => {
+                    return ` ${acc}  <h2> ${username}: </h2> <img src="/memechat/files/${username}.png?${Date.now()}" alt="meme"/>`
+                }, '')
+            })
+        
+        let imgCount = 0
+
+        const images = $chatRoom.querySelectorAll('img')
+        if (!images.length) {
+            return setTimeout(() => {
+                getMemes()
+            }, 1000)
+        } 
+
+        images.forEach( (img) => img.addEventListener('load', () => {
+            console.log(imgCount)
+            imgCount++
+            if( imgCount !== images.length ) return 
+ 
+            $chatRoom.style.display = 'block' // show the invisible div
+            $imageList.style.display = 'none' // hide the current div
+
+            // swap
+            const temp = $imageList 
+            $imageList = $chatRoom 
+            $chatRoom = temp
+
+            // check every sec
+            setTimeout(() => {
+                getMemes()
+            }, 1000)
+        })
+        )
+    })
+}
+    getVideo()
+    getMemes()
+
+    </script>
+</body>
+</html>
