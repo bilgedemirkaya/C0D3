@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stars With React</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+    integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    <style>
+        i {
+            font-size: 3.2em;
+        }
+        .fas {
+            color:yellow;
+            -webkit-text-stroke-width: 3px;
+            -webkit-text-stroke-color: black;
+        }
+    </style>
+
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+
+const Star = ({id, selected, setSelected, clicked, setClicked}) => {
+
+  function handeMouseOver() {
+    if (clicked) return 
+    setSelected(id)
+  }
+  function handleClick () {
+    if (clicked) return 
+    setClicked(id)
+  }
+  return (
+   <i className={selected >= id ? 'fas fa-star' : 'far fa-star'} onMouseEnter={handeMouseOver} onClick={handleClick} > </i>
+  )
+}
+
+
+const Stars = ({stars}) => {
+  const [selected, setSelected] = React.useState(0)
+  const [clicked, setClicked] = React.useState(0)
+
+  return (
+    <div onMouseLeave={() => setClicked(0)}>
+    {stars.map((id) => {
+      return (
+          <Star key={id} id={id} setSelected={setSelected} selected={selected} clicked={clicked} setClicked={setClicked}/>
+      )
+    })}
+    <h3> {clicked ? `You have given ${clicked} stars!` : `You are giving ${selected} stars!`} </h3>
+    </div>
+  )
+}
+    ReactDOM.render( 
+    <Stars stars={[1,2,3,4,5]} />,
+    document.getElementById('root')
+);
+
+</script>
+</body>
+</html>
