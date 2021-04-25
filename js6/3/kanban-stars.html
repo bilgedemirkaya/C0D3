@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban with React</title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            }
+        .body {
+            display: flex; 
+        }
+        .form {
+            display: flex;
+            margin-top: -5px;
+        }
+        .submit {
+            flex:1;
+            font-size: large;
+        }
+        textarea {
+            flex: 6;
+            font-size: large;
+        }
+        .todo {
+            background-color: #35235D;
+        }
+        .doing { 
+            background-color: #CB2402;
+        }
+        .done { 
+            background-color: #4C49A2;
+        }
+        .approved {
+            background-color: #A31A48;
+        }
+        .todoDiv, .doingDiv, .doneDiv, .approvedDiv {
+            margin-left: 50%;
+            flex:1;
+            width: 80%;
+        }
+        .task {
+            background-color: rgb(238, 238, 238);
+            padding: 13px;
+            margin-bottom:5px;
+            font-size: 20px;
+            display: flex;
+            justify-content: stretch;
+        }
+        .arrow {
+            border: none;
+            outline: none;
+            cursor: pointer;
+            font-size: large;
+            display: inline-block;
+            align-items: stretch;
+            align-self: center;
+            margin: 10px;
+            
+        }
+        .li {
+         margin:10px;  
+         display: inline-block;
+         cursor: pointer;
+         font-size: 20px;
+         width: 100%;
+        }
+        @media (max-width: 800px) {
+        body {
+            width: fit-content;
+        }
+        }
+        i {
+            font-size: 3.2em;
+        }
+        .fas {
+            color:yellow;
+            -webkit-text-stroke-width: 3px;
+            -webkit-text-stroke-color: black;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+<script type="text/babel">
+
+ //////////////////////////////// KANBAN /////////////////////////
+// Get unique ID for each task
+const getRandomInt = () => {
+        return '_' + Math.random().toString(36).substr(2, 9);
+}
+
+// Custom hook to use local storage
+const useStickyState = (defaultValue, key) => {
+  const [value, setValue] = React.useState(() => {
+    const stickyValue = window.localStorage.getItem(key);
+    return stickyValue !== null
+      ? JSON.parse(stickyValue)
+      : defaultValue;
+  });
+
+  React.useEffect(() => {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  }, [key, value]);
+  return [value, setValue];
+}
+
+const Task = (props) => {
+    const {type, allTasks, setAllTasks} = props
+    const classname = `${type}Div`
+    const [taskValue, setTaskValue] = React.useState('')
+    const [task, setTask] = React.useState({})
+    let id = React.useRef(0)
+    
+    const handleDeleteTask = (e) => {
+        const ifDelete = confirm('Are you sure you want to remove it?')
+        if (ifDelete) {
+            const filtered = allTasks.filter((task) => task.id != e.target.id)
+            setAllTasks(filtered)
+        }
+    }
+
+    const handleSwap = (e) => {
+        const selectedTask = allTasks.filter((task) => task.id == e.target.id)[0]
+        let newType
+        if (selectedTask.type == 'todo') newType = 'doing'
+        
+        if (selectedTask.type == 'doing') {
+            newType = e.target.className.includes('right') ? "done" : "todo"
+        }
+        if (selectedTask.type == 'done') {
+            newType = e.target.className.includes('right') ? "approved" : "doing"
+        }
+        if (selectedTask.type == 'approved') newType = "done"
+
+        // remove old
+        const filtered = allTasks.filter((currentTask) => currentTask.id != selectedTask.id)
+
+        id.current = getRandomInt()
+        const newTask = {id: id.current, type: newType, taskValue: selectedTask.taskValue}
+        setAllTasks([...filtered, newTask])
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        if (taskValue == '') return
+        id.current = getRandomInt()
+
+        // add new task
+        setAllTasks([...allTasks, {id: id.current, type, taskValue}])
+        // clear the value
+        setTaskValue('')
+    }
+        return (
+        <div> 
+            <div className={classname}>
+            <div className={type} style={{color:"white", textAlign: "center", fontSize: 22, padding: 10, margin: "auto"}} > {type} </div>
+            <div className="output"></div>
+            <div className="form">
+                <textarea rows="6" value={taskValue} onChange= {(e) => setTaskValue(e.target.value)}> </textarea>
+                <button className="submit" onClick={handleSubmit}> Submit </button>
+            </div>
+            {allTasks.map(({id, type, taskValue}) => {
+                const left = type =='todo' ? '' : '<'
+                const right = type =='approved' ? '' : '>'
+                if (type === props.type) {
+                return (
+                    <div className="task" key={id} id={id}>
+                        <div className="lefts arrow" id ={id} onClick={handleSwap} > {left} </div>  
+                        <div className="li" id={id} onClick={handleDeleteTask}> {taskValue} </div>
+                        <div className="rights arrow" id={id}  onClick={handleSwap}> {right} </div>                                 
+                    </div>
+                )} 
+            })}
+        </div>
+            </div>
+        )
+}
+
+
+const KanbanBoard = () => {
+    const [allTasks,setAllTasks] = useStickyState([], "tasks")
+
+    return (
+            <div className="body"> 
+                <Task type="todo" allTasks={allTasks} setAllTasks={setAllTasks}/> 
+                <Task type="doing" allTasks={allTasks} setAllTasks={setAllTasks}/> 
+                <Task type="done" allTasks={allTasks} setAllTasks={setAllTasks}/> 
+                <Task type="approved" allTasks={allTasks} setAllTasks={setAllTasks}/> 
+            </div>
+    )
+}
+
+
+
+/////////////////////////////////////////// STARS /////////////////////////
+
+
+const Star = ({id, selected, setSelected, clicked, setClicked}) => {
+
+function handeMouseOver() {
+  if (clicked) return 
+  setSelected(id)
+}
+function handleClick () {
+  if (clicked) return 
+  setClicked(id)
+}
+return (
+ <i className={selected >= id ? 'fas fa-star' : 'far fa-star'} onMouseEnter={handeMouseOver} onClick={handleClick} > </i>
+)
+}
+
+
+const Stars = ({stars}) => {
+const [selected, setSelected] = React.useState(0)
+const [clicked, setClicked] = React.useState(0)
+
+return (
+  <div onMouseLeave={() => setClicked(0)}>
+  {stars.map((id) => {
+    return (
+        <Star key={id} id={id} setSelected={setSelected} selected={selected} clicked={clicked} setClicked={setClicked}/>
+    )
+  })}
+  <h3> {clicked ? `You have given ${clicked} stars!` : `You are giving ${selected} stars!`} </h3>
+  </div>
+)
+}
+
+
+const App = () => {
+    const path = window.location.pathname.split('/').pop()
+    console.log(path)
+    if (path == 'stars') return <Stars stars={[1,2,3,4,5]}/>
+    if (path == 'kanban') return <KanbanBoard />
+    else return <h1> HELLO </h1>
+}
+
+
+ReactDOM.render( 
+    <App  />,
+    document.getElementById('root')
+);
+
+</script>
+</body>
+</html>
